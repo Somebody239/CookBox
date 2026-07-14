@@ -1,0 +1,52 @@
+name: Build unsigned iOS IPA
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+# Required only when a published GitHub Release needs the IPA attached to it.
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build CookBox
+    runs-on: macos-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Build unsigned iPhone app
+        run: |
+          xcodebuild \
+            -project CookBox.xcodeproj \
+            -scheme CookBox \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=""
+
+      - name: Package IPA
+        run: |
+          mkdir -p ipa/Payload
+          cp -R build/Build/Products/Release-iphoneos/CookBox.app ipa/Payload/
+          cd ipa
+          zip -qry ../CookBox-unsigned.ipa Payload
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CookBox-unsigned-ipa
+          path: CookBox-unsigned.ipa
+          if-no-files-found: error
+
+      - name: Attach IPA to the GitHub Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: CookBox-unsigned.ipa
+          fail_on_unmatched_files: true
