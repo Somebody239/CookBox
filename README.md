@@ -38,6 +38,8 @@ This is useful for personal testing, but it is not TestFlight and the IPA cannot
 
 Free Apple ID signing has Apple-imposed limits, including short-lived app certificates (typically seven days) and a small limit on active sideloaded apps. The tester will need to refresh or reinstall the app after the certificate expires. Do not share an Apple ID with testers.
 
+The current testing build requires iOS 26 or later because CookBox uses SwiftUI's iOS 26 visual effects.
+
 ### Publish a testing build
 
 1. Push the code you want to test to `main`.
