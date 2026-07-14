@@ -18,6 +18,16 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v4
 
+      # GitHub's current macOS runner uses Xcode 26.5. Convert this temporary
+      # checkout from the newer local Xcode project format before building.
+      # This does not modify the project stored in the repository.
+      - name: Prepare project for hosted Xcode
+        run: |
+          sed -i '' \
+            -e 's/objectVersion = 110;/objectVersion = 77;/' \
+            -e 's/IPHONEOS_DEPLOYMENT_TARGET = 27.0;/IPHONEOS_DEPLOYMENT_TARGET = 18.0;/' \
+            CookBox.xcodeproj/project.pbxproj
+
       - name: Build unsigned iPhone app
         run: |
           xcodebuild \
