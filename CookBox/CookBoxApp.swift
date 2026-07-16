@@ -6,12 +6,15 @@
 //
 
 import SwiftUI
+import SwiftData
 
+@available(iOS 26.0, *)
 @main
 struct CookBoxApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .modelContainer(for: Recipe.self)
         }
     }
 }

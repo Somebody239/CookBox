@@ -6,20 +6,23 @@
 //
 
 import SwiftUI
+import SwiftData
 
+@available(iOS 26.0, *)
 struct ContentView: View {
+
     var body: some View {
-        
+
         ZStack () {
-            
+
             Color.red
                 .ignoresSafeArea()
-            
+
             TabView {
                 Tab("Home", systemImage: "house.fill") {
                     HomeView()
                 }
-            
+
                 Tab("Search", systemImage: "magnifyingglass") {
                     SearchView()
                 }
@@ -28,23 +31,29 @@ struct ContentView: View {
                     AccountView()
                 }
             }
-            
-            
-            
-            
-            
-            
-        }
-        
-        
 
-        
-        
+
+
+
+
+
+        }
+
+
+
+
+
     }
+
 }
 
 
 
 #Preview {
-    ContentView()
+    if #available(iOS 26.0, *) {
+        ContentView()
+            .modelContainer(for: Recipe.self, inMemory: true)
+    } else {
+        // Fallback on earlier versions
+    }
 }

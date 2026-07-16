@@ -1,0 +1,37 @@
+{
+  "fill" : {
+    "solid" : "display-p3:0.92941,0.94902,0.95686,1.00000"
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "glass" : true,
+          "image-name" : "CookBoxLogo 3.svg",
+          "name" : "CookBoxLogo 3",
+          "position" : {
+            "scale" : 0.67,
+            "translation-in-points" : [
+              6.003619657242666,
+              -0.34664175395801067
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.6
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.2
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}

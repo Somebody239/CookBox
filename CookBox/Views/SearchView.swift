@@ -6,38 +6,36 @@
 //
 
 import SwiftUI
+import SwiftData
 
+@available(iOS 26.0, *)
 struct SearchView: View {
-    @State private var showingSheet = false
-    @State private var colorDark = Color(red: 20 / 255, green: 17 / 255, blue: 15 / 255)
-    @State private var colorLight = Color(red: 237 / 255, green: 242 / 255, blue: 244 / 255)
-    @Environment(\.colorScheme) var colorScheme
-
-    let today = Date.now
-        
-    
     @State private var searchText = ""
-    
+    @Query private var recipes: [Recipe]
+    @Environment(\.modelContext) private var context
+
     var body: some View {
-        
         NavigationStack() {
             ZStack {
-                
-                if colorScheme == .dark {
-                    colorDark
-                        .ignoresSafeArea()
-
-                } else {
-                    colorLight
-                        .ignoresSafeArea()
-                }
-                
+                Color("AppBackground")
+                    .ignoresSafeArea()
                 VStack() {
-                    ScrollView {
-                        //Recepis Here
+                    ScrollView { //Recipies
+                        LazyVStack(spacing: 14) {
+                            ForEach(recipes) { recipe in
+                                if recipe.recipeName.localizedCaseInsensitiveContains(searchText) || searchText.isEmpty {
+                                    recipeCard(for: recipe)
+                                }
+
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.top, 12)
                     }
-                    
-                    HStack {
+
+
+
+                    HStack { // Search Bar
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.gray)
                         TextField("Search recipes...", text: $searchText)
@@ -53,17 +51,36 @@ struct SearchView: View {
                     .padding(12)
                     .glassEffect()
                     .padding()
-                    
                 }
-                
-                
-                
             }
-            
+            .task {
+                if recipes.isEmpty {
+                    context.insert(Recipe(recipeName: "Creamy Tomato Pasta"))
+                    context.insert(Recipe(recipeName: "Chicken Tacos"))
+                    context.insert(Recipe(recipeName: "Blueberry Pancakes"))
+                }
+            }
         }
+    }
+
+    //Recipe Card Design
+    private func recipeCard(for recipe: Recipe) -> some View {
+        HStack {
+            Text(recipe.recipeName)
+                .font(.headline)
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+        }
+        .padding()
+        .glassEffect()
+        .cornerRadius(12)
     }
 }
 
+
 #Preview {
     SearchView()
+        .modelContainer(for: Recipe.self, inMemory: true)
 }
