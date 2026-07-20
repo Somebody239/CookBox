@@ -8,8 +8,16 @@
 import SwiftUI
 import SwiftData
 
+private enum Tabs: Hashable {
+    case home
+    case account
+    case search
+}
+
 @available(iOS 26.0, *)
 struct ContentView: View {
+    @State private var selectedTab: Tabs = .home
+    @State private var searchText = ""
 
     var body: some View {
 
@@ -18,19 +26,23 @@ struct ContentView: View {
             Color.red
                 .ignoresSafeArea()
 
-            TabView {
-                Tab("Home", systemImage: "house.fill") {
+            TabView(selection: $selectedTab) {
+                Tab("Home", systemImage: "house.fill", value: Tabs.home) {
                     HomeView()
                 }
 
-                Tab("Search", systemImage: "magnifyingglass") {
-                    SearchView()
-                }
-
-                Tab("Account", systemImage: "person.crop.circle.fill") {
+                Tab("Account", systemImage: "person.crop.circle.fill", value: Tabs.account) {
                     AccountView()
                 }
+
+                Tab(value: Tabs.search, role: .search) {
+                    NavigationStack {
+                        SearchView(searchText: $searchText)
+                    }
+                    .searchable(text: $searchText, prompt: "Search recipes...")
+                }
             }
+            .tabViewSearchActivation(.searchTabSelection)
 
 
 

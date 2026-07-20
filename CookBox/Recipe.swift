@@ -17,11 +17,13 @@ struct Ingredient: Identifiable, Codable {
 
 @Model
 class Recipe {
-    var recipeName: String
+    @Attribute(.externalStorage) var imageData: Data?
+    var name: String
     var ingredients: [Ingredient]
 
-    init(recipeName: String, ingredients: [Ingredient] = []) {
-        self.recipeName = recipeName
+    init(imageData: Data? = nil, name: String, ingredients: [Ingredient] = []) {
+        self.imageData = imageData
+        self.name = name
         self.ingredients = ingredients
     }
 }

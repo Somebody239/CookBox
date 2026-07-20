@@ -18,7 +18,7 @@ struct AddRecipeView: View {
 
 
     @State private var selectedItem: PhotosPickerItem? = nil
-    @State private var selectedImage: Image? = nil
+    @State private var selectedImageData: Data? = nil
 
     @Environment(\.modelContext) private var context
 
@@ -31,8 +31,8 @@ struct AddRecipeView: View {
                 Form() {
                     Section("Photo") {
                         VStack(spacing: 16) {
-                            if let selectedImage {
-                                selectedImage
+                            if let selectedImageData, let uiImage = UIImage(data: selectedImageData) {
+                                Image(uiImage: uiImage)
                                     .resizable()
                                     .scaledToFill()
                                     .frame(maxWidth: 340, minHeight: 250, maxHeight: 250)
@@ -59,9 +59,8 @@ struct AddRecipeView: View {
                             .glassEffect()
                             .onChange(of: selectedItem) { _, newItem in
                                 Task {
-                                    if let data = try? await newItem?.loadTransferable(type: Data.self),
-                                       let uiImage = UIImage(data: data) {
-                                        selectedImage = Image(uiImage: uiImage)
+                                    if let data = try? await newItem?.loadTransferable(type: Data.self) {
+                                        selectedImageData = data
                                     }
                                 }
                             }
@@ -125,7 +124,7 @@ struct AddRecipeView: View {
                 }
                 .scrollContentBackground(.hidden)
                 .background(Color("AppBackground"))
-                .navigationTitle("New Recipe")
+                .navigationTitle(recipeName.isEmpty ? "New Recipe" : recipeName) // Tittle of Navigation stack, hidden away
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Cancel") {
@@ -139,7 +138,7 @@ struct AddRecipeView: View {
                                 !$0.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
                                 !$0.measurement.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
                             }
-                            let newRecipe = Recipe(recipeName: recipeName, ingredients: savedIngredients)
+                            let newRecipe = Recipe(imageData: selectedImageData, name: recipeName, ingredients: savedIngredients)
                             context.insert(newRecipe)
 
                             dismiss()

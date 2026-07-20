@@ -12,7 +12,24 @@ struct AccountView: View {
         ZStack() {
             Color("AppBackground")
                 .ignoresSafeArea()
-
+            
+            ScrollView {
+                VStack(spacing: 20) {
+                    Text("Account")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.primary)
+                        .padding(20)
+                    
+                    List {
+                        
+                        
+                        
+                    }
+                        
+                    
+                }
+            }
 
         }
     }

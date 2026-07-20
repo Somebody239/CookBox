@@ -10,54 +10,28 @@ import SwiftData
 
 @available(iOS 26.0, *)
 struct SearchView: View {
-    @State private var searchText = ""
+    @Binding var searchText: String
     @Query private var recipes: [Recipe]
-    @Environment(\.modelContext) private var context
+
+    init(searchText: Binding<String>) {
+        self._searchText = searchText
+    }
 
     var body: some View {
-        NavigationStack() {
-            ZStack {
-                Color("AppBackground")
-                    .ignoresSafeArea()
-                VStack() {
-                    ScrollView { //Recipies
-                        LazyVStack(spacing: 14) {
-                            ForEach(recipes) { recipe in
-                                if recipe.recipeName.localizedCaseInsensitiveContains(searchText) || searchText.isEmpty {
-                                    recipeCard(for: recipe)
-                                }
-
-                            }
-                        }
-                        .padding(.horizontal)
-                        .padding(.top, 12)
-                    }
-
-
-
-                    HStack { // Search Bar
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.gray)
-                        TextField("Search recipes...", text: $searchText)
-                            .textFieldStyle(.plain)
-                            .autocorrectionDisabled ()
-                        if !searchText.isEmpty {
-                            Button (action: { searchText = "" }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundColor(.gray)
+        ZStack {
+            Color("AppBackground")
+                .ignoresSafeArea()
+            VStack() {
+                ScrollView { //Recipies
+                    LazyVStack(spacing: 14) {
+                        ForEach(recipes) { recipe in
+                            if recipe.name.localizedCaseInsensitiveContains(searchText) || searchText.isEmpty {
+                                recipeCard(for: recipe)
                             }
                         }
                     }
-                    .padding(12)
-                    .glassEffect()
-                    .padding()
-                }
-            }
-            .task {
-                if recipes.isEmpty {
-                    context.insert(Recipe(recipeName: "Creamy Tomato Pasta"))
-                    context.insert(Recipe(recipeName: "Chicken Tacos"))
-                    context.insert(Recipe(recipeName: "Blueberry Pancakes"))
+                    .padding(.horizontal)
+                    .padding(.top, 12)
                 }
             }
         }
@@ -66,7 +40,13 @@ struct SearchView: View {
     //Recipe Card Design
     private func recipeCard(for recipe: Recipe) -> some View {
         HStack {
-            Text(recipe.recipeName)
+            if let imageData = recipe.imageData, let uiImage = UIImage(data: imageData) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 100, height: 100)
+            }
+            Text(recipe.name)
                 .font(.headline)
 
             Spacer()
@@ -74,13 +54,13 @@ struct SearchView: View {
             Image(systemName: "chevron.right")
         }
         .padding()
-        .glassEffect()
+        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 30))
         .cornerRadius(12)
     }
 }
 
 
 #Preview {
-    SearchView()
+    SearchView(searchText: .constant(""))
         .modelContainer(for: Recipe.self, inMemory: true)
 }
