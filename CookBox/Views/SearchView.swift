@@ -26,7 +26,12 @@ struct SearchView: View {
                     LazyVStack(spacing: 14) {
                         ForEach(recipes) { recipe in
                             if recipe.name.localizedCaseInsensitiveContains(searchText) || searchText.isEmpty {
-                                recipeCard(for: recipe)
+                                NavigationLink {
+                                    RecipeView(recipe: recipe)
+                                } label: {
+                                    recipeCard(for: recipe)
+                                }
+                                .buttonStyle(.plain)
                             }
                         }
                     }

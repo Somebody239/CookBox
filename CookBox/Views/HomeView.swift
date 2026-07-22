@@ -43,7 +43,12 @@ struct HomeView: View {
                         ScrollView(.horizontal) {
                             HStack() {
                                 ForEach(recipes) { recipe in
-                                    featured(for: recipe)
+                                    NavigationLink {
+                                        RecipeView(recipe: recipe)
+                                    } label: {
+                                        featured(for: recipe)
+                                    }
+                                    .buttonStyle(.plain)
                                 }
                                 // .padding(.trailing, 10)    Do i add this??
                                 
@@ -91,23 +96,29 @@ struct HomeView: View {
     }
     private func featured(for recipe: Recipe) -> some View {
         HStack {
-            if let imageData = recipe.imageData, let uiImage = UIImage(data: imageData) {
-                ZStack() {
+            ZStack() {
+                if let imageData = recipe.imageData, let uiImage = UIImage(data: imageData) {
                     Image(uiImage: uiImage)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 325, height: 175)
-                    
-                    Text(recipe.name)
-                        .font(.title2)
-                        .bold()
-                        .padding(.bottom, 10)
-                        .padding(.leading, 5)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                } else {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(width: 325, height: 175)
+
+                    Image(systemName: "fork.knife")
+                        .font(.largeTitle)
+                        .foregroundColor(.gray)
                 }
-                
+
+                Text(recipe.name)
+                    .font(.title2)
+                    .bold()
+                    .padding(.bottom, 10)
+                    .padding(.leading, 5)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
-        
         }
         .padding()
         .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 30))
