@@ -12,9 +12,11 @@ import SwiftData
 struct SearchView: View {
     @Binding var searchText: String
     @Query private var recipes: [Recipe]
+    let hideFavourites: Bool
 
-    init(searchText: Binding<String>) {
+    init(searchText: Binding<String>, hideFavourites: Bool = false) {
         self._searchText = searchText
+        self.hideFavourites = hideFavourites
     }
 
     var body: some View {
@@ -25,7 +27,8 @@ struct SearchView: View {
                 ScrollView { //Recipies
                     LazyVStack(spacing: 14) {
                         ForEach(recipes) { recipe in
-                            if recipe.name.localizedCaseInsensitiveContains(searchText) || searchText.isEmpty {
+                            if (!hideFavourites || !recipe.isFavourite) &&
+                                (recipe.name.localizedCaseInsensitiveContains(searchText) || searchText.isEmpty) {
                                 NavigationLink {
                                     RecipeView(recipe: recipe)
                                 } label: {
@@ -44,23 +47,26 @@ struct SearchView: View {
 
     //Recipe Card Design
     private func recipeCard(for recipe: Recipe) -> some View {
-        HStack {
+        HStack(spacing: 16) {
             if let imageData = recipe.imageData, let uiImage = UIImage(data: imageData) {
                 Image(uiImage: uiImage)
                     .resizable()
-                    .scaledToFit()
-                    .frame(width: 100, height: 100)
+                    .scaledToFill()
+                    .frame(width: 130, height: 120)
+                    .clipped()
             }
+
             Text(recipe.name)
                 .font(.headline)
 
             Spacer()
 
             Image(systemName: "chevron.right")
+                .padding(.trailing, 16)
         }
-        .padding()
+        .frame(maxWidth: .infinity, minHeight: 120, maxHeight: 120, alignment: .leading)
+        .clipShape(RoundedRectangle(cornerRadius: 30))
         .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 30))
-        .cornerRadius(12)
     }
 }
 

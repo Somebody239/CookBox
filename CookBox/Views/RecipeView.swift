@@ -68,24 +68,26 @@ struct RecipeView: View {
 
     private var heroSection: some View {
         ZStack(alignment: .bottomLeading) {
-            Group {
-                if let imageData = recipe.imageData, let uiImage = UIImage(data: imageData) {
-                    Image(uiImage: uiImage)
-                        .resizable()
-                        .scaledToFill()
-                } else {
-                    ZStack {
-                        Color.gray.opacity(0.18)
+            GeometryReader { geometry in
+                Group {
+                    if let imageData = recipe.imageData, let uiImage = UIImage(data: imageData) {
+                        Image(uiImage: uiImage)
+                            .resizable()
+                            .scaledToFill()
+                    } else {
+                        ZStack {
+                            Color.gray.opacity(0.18)
 
-                        Image(systemName: "fork.knife")
-                            .font(.system(size: 54, weight: .light))
-                            .foregroundColor(.gray)
+                            Image(systemName: "fork.knife")
+                                .font(.system(size: 54, weight: .light))
+                                .foregroundColor(.gray)
+                        }
                     }
                 }
+                .frame(width: geometry.size.width, height: 280)
+                .clipped()
             }
-            .frame(maxWidth: .infinity)
             .frame(height: 280)
-            .clipped()
 
             LinearGradient(
                 colors: [.clear, .black.opacity(0.72)],
